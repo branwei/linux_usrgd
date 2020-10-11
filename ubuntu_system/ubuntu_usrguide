@@ -41,22 +41,54 @@ sudo apt-get check 检查是否有损坏的依赖
 
 git clone Homebrew方法
 
-Debian、Ubuntu、Fedora、CentOS、Red Hat运行的命令：
+第1步 - 克隆LinuxBrew
+为了保持整洁，克隆LinuxBrew成用户的主目录中的隐藏目录：
 
-1、Debian或Ubuntu
+$ git clone https://github.com/Homebrew/linuxbrew.git ~/.linuxbrew
+但任何其他目录也将工作，以及。
 
-sudo apt-get install build-essential curl file git
+第2步 - 更新环境变量
+下一步骤是将LinuxBrew添加到用户的环境变量。
 
-2、Fedora、CentOS或Red Hat
+添加以下行到用户的年底~/.bashrc文件中：
 
-sudo yum groupinstall 'Development Tools' && sudo yum install curl file git
+# Until LinuxBrew is fixed, the following is required.
+# See: https://github.com/Homebrew/linuxbrew/issues/47
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:/usr/lib64/pkgconfig:/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib64/pkgconfig:/usr/share/pkgconfig:$PKG_CONFIG_PATH
+## Setup linux brew
+export LINUXBREWHOME=$HOME/.linuxbrew
+export PATH=$LINUXBREWHOME/bin:$PATH
+export MANPATH=$LINUXBREWHOME/man:$MANPATH
+export PKG_CONFIG_PATH=$LINUXBREWHOME/lib64/pkgconfig:$LINUXBREWHOME/lib/pkgconfig:$PKG_CONFIG_PATH
+export LD_LIBRARY_PATH=$LINUXBREWHOME/lib64:$LINUXBREWHOME/lib:$LD_LIBRARY_PATH
+注 ：如果您安装LinuxBrew到不同的目录，更改路径LINUXBREWHOME以上。
 
-随时随地提取或git clone Homebrew，请使用/home/linuxbrew/.linuxbrew（以启用二进制包的使用）：
+第3步 - 更换源
+brew默认的源速度太慢了，有时还会被墙……，可以替换成国内的源，这里演示的是中科大的源。
 
-git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
+替换brew.git
+cd "$(brew --repo)"
 
-mkdir ~/.linuxbrew/bin
+git remote set-url origin https://mirrors.ustc.edu.cn/brew.git
+替换homebrew-core.git
+cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"
 
-ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin
+git remote set-url origin https://mirrors.ustc.edu.cn/homebrew-core.git
+替换Homebrew Bottles源
+对于bash用户：
 
-eval $(~/.linuxbrew/bin/brew shellenv)
+echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.bash_profile
+
+source ~/.bash_profile
+然后brew update 更新一下。
+
+第4步 - 测试安装
+要确保这些更改生效，请注销并再次登录。 然后shell应该使用这些新的设置。
+
+要测试这些新设置，请尝试：
+
+$ which brew
+/home/ubuntu/.linuxbrew/bin/brew
+$ echo $PKG_CONFIG_PATH
+/home/ubuntu/.linuxbrew/lib64/pkgconfig:/home/ubuntu/.linuxbrew/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:/usr/lib64/pkgconfig:/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib64/pkgconfig:/usr/share/pkgconfig:
+使用Linu
